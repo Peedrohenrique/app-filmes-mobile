@@ -1,8 +1,10 @@
-import React from "react";
-import { ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import API_FILMES, { key } from "../../services/api";
 import Header from "../../components/Header";
 import { Feather } from "@expo/vector-icons";
 import SliderItem from "../../components/SliderItem";
+import { ScrollView, ActivityIndicator } from "react-native";
+import { getListMovies, randomBanner } from "../../utils/movie";
 import {
   Container,
   SearchContainer,
@@ -15,6 +17,67 @@ import {
 } from "./styles";
 
 function Home() {
+  const [nowMovies, setNowMovies] = useState([]);
+  const [popularMovies, setPopularMovies] = useState([]);
+  const [topMovies, setTopMovies] = useState([]);
+  const [bannerMovies, setBannerMovies] = useState({});
+  const [loading, setLoanding] = useState(true);
+
+  useEffect(() => {
+    const ac = new AbortController();
+    let isActive = true;
+
+    async function getMovies() {
+      const [nowData, popularData, topData] = await Promise.all([
+        API_FILMES.get("/movie/now_playing", {
+          params: {
+            api_key: key,
+            language: "pt-BR",
+            page: 1,
+          },
+        }),
+        API_FILMES.get("/movie/popular", {
+          params: {
+            api_key: key,
+            language: "pt-BR",
+            page: 1,
+          },
+        }),
+        API_FILMES.get("/movie/top_rated", {
+          params: {
+            api_key: key,
+            language: "pt-BR",
+            page: 1,
+          },
+        }),
+      ]);
+      if (isActive) {
+        const nowList = getListMovies(10, nowData.data.results);
+        const popularList = getListMovies(10, popularData.data.results);
+        const topList = getListMovies(10, topData.data.results);
+
+        setBannerMovies(nowData.data.results[randomBanner(nowData.data.results)])
+        setNowMovies(nowList);
+        setPopularMovies(popularList);
+        setTopMovies(topList);
+        setLoanding(false);
+      }
+    }
+    getMovies();
+    return () => {
+      isActive = false;
+      ac.abort();
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <Container>
+        <ActivityIndicator size="large" color={"#fff"} />
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <Header title="Cine Mania" />
@@ -31,7 +94,7 @@ function Home() {
           <Banner
             resizeMethod="resize"
             source={{
-              uri: "https://images.unsplash.com/photo-1601643157091-ce5c665179ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1172&q=80",
+              uri: `https://image.tmdb.org/t/p/original/${bannerMovies.poster_path}`,
             }}
           />
         </BannerButton>
@@ -39,24 +102,27 @@ function Home() {
         <SliderMovie
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          data={[1, 2, 3, 4, 5]}
-          renderItem={({ item }) => <SliderItem />}
+          data={nowMovies}
+          renderItem={({ item }) => <SliderItem data={item} />}
+          keyExtractor={(item) => String(item.id)}
         />
 
         <Title>Populares</Title>
         <SliderMovie
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          data={[1, 2, 3, 4, 5]}
-          renderItem={({ item }) => <SliderItem />}
+          data={popularMovies}
+          renderItem={({ item }) => <SliderItem data={item} />}
+          keyExtractor={(item) => String(item.id)}
         />
 
         <Title>Mais votados</Title>
         <SliderMovie
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          data={[1, 2, 3, 4, 5]}
-          renderItem={({ item }) => <SliderItem />}
+          data={topMovies}
+          renderItem={({ item }) => <SliderItem data={item} />}
+          keyExtractor={(item) => String(item.id)}
         />
       </ScrollView>
     </Container>
