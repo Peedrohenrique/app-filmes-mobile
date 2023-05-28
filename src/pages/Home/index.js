@@ -11,13 +11,13 @@ import {
   Title,
   BannerButton,
   Banner,
-  SliderMovie
+  SliderMovie,
 } from "./styles";
 
 function Home() {
   return (
     <Container>
-      <Header title="APP Filmes" />
+      <Header title="Cine Mania" />
       <SearchContainer>
         <Input placeholder="Ex Vingadores" placeholderTextColor="#ddd" />
         <SearchButton>
@@ -40,7 +40,23 @@ function Home() {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           data={[1, 2, 3, 4, 5]}
-          renderItem={ ({ item }) => <SliderItem /> }
+          renderItem={({ item }) => <SliderItem />}
+        />
+
+        <Title>Populares</Title>
+        <SliderMovie
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          data={[1, 2, 3, 4, 5]}
+          renderItem={({ item }) => <SliderItem />}
+        />
+
+        <Title>Mais votados</Title>
+        <SliderMovie
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          data={[1, 2, 3, 4, 5]}
+          renderItem={({ item }) => <SliderItem />}
         />
       </ScrollView>
     </Container>
