@@ -2,6 +2,7 @@ import React from "react";
 import { ScrollView } from "react-native";
 import Header from "../../components/Header";
 import { Feather } from "@expo/vector-icons";
+import SliderItem from "../../components/SliderItem";
 import {
   Container,
   SearchContainer,
@@ -10,6 +11,7 @@ import {
   Title,
   BannerButton,
   Banner,
+  SliderMovie
 } from "./styles";
 
 function Home() {
@@ -23,7 +25,7 @@ function Home() {
         </SearchButton>
       </SearchContainer>
 
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <Title>Em cartaz</Title>
         <BannerButton activeOpacity={0.9} onPress={() => alert("Hello world")}>
           <Banner
@@ -33,6 +35,13 @@ function Home() {
             }}
           />
         </BannerButton>
+
+        <SliderMovie
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          data={[1, 2, 3, 4, 5]}
+          renderItem={ ({ item }) => <SliderItem /> }
+        />
       </ScrollView>
     </Container>
   );
