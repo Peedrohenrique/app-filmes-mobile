@@ -21,6 +21,7 @@ function Home() {
   const [nowMovies, setNowMovies] = useState([]);
   const [popularMovies, setPopularMovies] = useState([]);
   const [topMovies, setTopMovies] = useState([]);
+  const [input, setInput] = useState("");
   const [bannerMovies, setBannerMovies] = useState({});
   const [loading, setLoanding] = useState(true);
   const navigation = useNavigation();
@@ -77,6 +78,14 @@ function Home() {
     navigation.navigate('Detail', {id: item.id})
   }
 
+  function handleSearchMovie() {
+    if(input === "") return;
+
+    navigation.navigate('Search', {name: input})
+    setInput('');
+  }
+  
+
   if (loading) {
     return (
       <Container>
@@ -89,8 +98,13 @@ function Home() {
     <Container>
       <Header title="Cine Mania" />
       <SearchContainer>
-        <Input placeholder="Ex Vingadores" placeholderTextColor="#ddd" />
-        <SearchButton>
+        <Input 
+        placeholder="Digite seu filme" 
+        placeholderTextColor="#ddd"
+        value={input}
+        onChangeText={(text) => setInput(text)}
+        />
+        <SearchButton onPress={ handleSearchMovie }>
           <Feather name="search" size={30} color={"#FFF"} />
         </SearchButton>
       </SearchContainer>
